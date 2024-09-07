@@ -5,3 +5,6 @@ sample
 .vscode
 *.zip
 __pycache__
+*.png
+*.json
+*.jpg
