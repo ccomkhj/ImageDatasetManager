@@ -89,6 +89,8 @@ def main():
         st.session_state.merged_task_path = None
     if "s3_uri" not in st.session_state:
         st.session_state.s3_uri = ""
+    if "s3_comment" not in st.session_state:
+        st.session_state.s3_comment = ""
 
     if st.button("Merge Datasets"):
         if (dataset_source == "S3" and existing_s3_uri) or (
@@ -113,11 +115,16 @@ def main():
             st.success(
                 f"Datasets merged and split. Merged data saved at {merged_task_path}"
             )
+            st.session_state.now = now
 
     if st.session_state.merged_task_path is not None:
         st.session_state.s3_uri = st.text_input(
-            "Enter S3 URI to upload the merged dataset (e.g., s3://merged-datasets/)",
+            "Enter S3 URI to upload (e.g., s3://hexa-cv-dataset/test/)",
             st.session_state.s3_uri,
+        )
+        st.session_state.s3_comment = st.text_input(
+            "Enter Comment for S3 dataset (e.g., cross_validation)",
+            st.session_state.s3_comment,
         )
 
         if st.button("Upload Merged Dataset to S3"):
@@ -126,7 +133,12 @@ def main():
             elif not st.session_state.s3_uri:
                 st.warning("Write S3 URI.")
             else:
-                upload_to_s3(st.session_state.merged_task_path, st.session_state.s3_uri)
+                upload_to_s3(
+                    st.session_state.merged_task_path,
+                    st.session_state.s3_uri,
+                    st.session_state.now,
+                    st.session_state.s3_comment,
+                )
                 st.success(
                     f"Merged dataset uploaded to S3 at {st.session_state.s3_uri}"
                 )

@@ -3,6 +3,7 @@ import datetime
 from loguru import logger
 import yaml
 import boto3
+import streamlit as st
 
 
 def load_dataset_from_s3(s3_uri: str, local_download_path="existing_task"):
@@ -65,7 +66,13 @@ def load_aws_credentials(credentials_path="credentials/aws.yaml"):
     return credentials
 
 
-def upload_to_s3(local_path, s3_uri, credentials_path="credentials/aws.yaml"):
+def upload_to_s3(
+    local_path,
+    s3_uri,
+    now: str,
+    comment: str = "",
+    credentials_path="credentials/aws.yaml",
+):
     credentials = load_aws_credentials(credentials_path)
 
     # Split the S3 URI into bucket name and prefix
@@ -80,9 +87,19 @@ def upload_to_s3(local_path, s3_uri, credentials_path="credentials/aws.yaml"):
     )
 
     for root, _, files in os.walk(local_path):
+
+        progress_text = f"Loading dataset ({root}) from S3 in progress."
+        my_bar = st.progress(0, text=progress_text)
+        total_files = len(files)
+        uploaded_files = 0
+
         for file in files:
             local_file_path = os.path.join(root, file)
             s3_file_path = os.path.relpath(local_file_path, local_path)
-            s3_key = os.path.join(prefix, s3_file_path)
+            s3_key = os.path.join(prefix, f"{now}{comment}", s3_file_path)
             s3.upload_file(local_file_path, bucket_name, s3_key)
             logger.info(f"Uploaded {local_file_path} to s3://{bucket_name}/{s3_key}")
+            my_bar.progress((uploaded_files) / total_files, text=progress_text)
+            uploaded_files += 1
+
+        my_bar.empty()
