@@ -1,11 +1,12 @@
 # Datumaro-GUI
 
-Datumaro-GUI is a graphical user interface (GUI) built with Streamlit to make working with computer vision datasets using Datumaro easier and more intuitive. This project aims to provide an easy-to-use interface for registering and merging annotations.
+Datumaro-GUI is a graphical user interface (GUI) built with Streamlit to make working with computer vision datasets using Datumaro easier and more intuitive. This project aims to provide an easy-to-use interface for registering, merging, and filtering annotations.
 
 ## Features
 
 - **Register new datasets**: Upload and process images and annotations to create new datasets.
 - **Merge datasets**: Combine existing datasets with new data and split them into training and validation sets.
+- **Filter annotations**: Apply custom filters to datasets to extract specific data based on conditions.
 - **AWS S3 Integration**: Load existing datasets from S3 and upload the processed datasets back to S3.
 
 ## Project Structure
@@ -17,6 +18,7 @@ datumaro-gui/
 ├── pages/
 │   ├── merge.py
 │   ├── new.py
+│   ├── filter.py
 ├── requirements.txt
 ├── README.md
 └── credentials/
@@ -28,6 +30,7 @@ datumaro-gui/
 - **pages/**: Contains the different pages for the Streamlit app.
     - **merge.py**: Page for merging datasets.
     - **new.py**: Page for registering new annotations.
+    - **filter.py**: Page for applying filters to datasets.
 - **credentials/aws.yaml**: Stores the AWS credentials for interacting with S3.
 
 ## Installation
@@ -70,7 +73,6 @@ datumaro-gui/
 
 2. Open your browser and go to `http://localhost:8501` to interact with the Datumaro-GUI.
 
-
 ## Contributing
 
 Contributions are welcome! Feel free to submit a pull request or open an issue.
@@ -78,8 +80,3 @@ Contributions are welcome! Feel free to submit a pull request or open an issue.
 ## License
 
 This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
-
-## Acknowledgements
-
-- [Datumaro](https://github.com/cvat-ai/datumaro) for providing a powerful dataset management tool.
-- [Streamlit](https://www.streamlit.io/) for providing a platform to build interactive GUI applications.

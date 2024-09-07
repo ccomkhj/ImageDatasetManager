@@ -1,34 +1,43 @@
 import streamlit as st
 import datumaro as dm
 from datumaro.components.dataset import Dataset
+from datumaro.components.annotation import Annotation, Bbox
+from datumaro.components.dataset_base import DatasetItem
+from datumaro.components.media import Image
 from datumaro.components.hl_ops import HLOps
 import datumaro.plugins.splitter as splitter
 from utils import save_uploaded_files, upload_to_s3
 import os
 
 
-def create_new_task_split(input_base_path: str, now: str, export_base_path="exported"):
+def create_new_task_filter(
+    input_base_path: str, now: str, filter_cmd: str, export_base_path="exported"
+):
     # Load new dataset
     dataset = Dataset.import_from(input_base_path, "coco")
 
-    # Aggregate subsets
-    aggregated = HLOps.aggregate(dataset, from_subsets=["default"], to_subset="default")
-
-    # Split the aggregated dataset
-    splits = [("train", 0.8), ("val", 0.2)]
-    task = splitter.SplitTask.detection.name
-    resplitted = aggregated.transform("split", task=task, splits=splits)
+    st.text("Dataset profile before filtering:")
+    st.code(dataset)
 
     export_path = os.path.join(export_base_path, now)
 
+    # Define the filter function in the current scope
+    exec(filter_cmd, globals())
+
+    # Use the dynamically created filter function
+    filtered_result = Dataset.filter(dataset, globals()["filter_func"])
+
+    st.text("Dataset profile after filtering:")
+    st.code(filtered_result)
+
     # Export the split datasets
-    resplitted.export(export_path, "coco", save_media=True)
+    filtered_result.export(export_path, "coco", save_media=True)
 
     return export_path
 
 
 def main():
-    st.write("# Register Annotation")
+    st.write("# Filter Annotation")
     images = st.file_uploader(
         "Upload Image Files", accept_multiple_files=True, type=["jpg", "png"]
     )
@@ -40,11 +49,28 @@ def main():
         st.session_state.s3_uri = ""
     if "s3_comment" not in st.session_state:
         st.session_state.s3_comment = ""
+    if "filter_cmd" not in st.session_state:
+        st.session_state.filter_cmd = ""
+
+    st.divider()
+    sample_code = """
+def filter_func(item: DatasetItem) -> bool:
+    h, w = item.media_as(Image).size
+    return h > 1024 or w > 1024
+    """
+    st.code(sample_code)
+    st.text("Above is a sample code to filter. You can apply your own below.")
+
+    st.session_state.filter_cmd = st.text_area(
+        "Define your filter function:",
+        value=st.session_state.filter_cmd,
+        height=300,
+    )
 
     if st.button("Register Annotation"):
         if images and annotation and st.session_state.filter_cmd:
             base_path, now = save_uploaded_files(images, annotation)
-            task_path = create_new_task_split(
+            task_path = create_new_task_filter(
                 base_path, now, filter_cmd=st.session_state.filter_cmd
             )
             st.session_state.task_path = task_path
