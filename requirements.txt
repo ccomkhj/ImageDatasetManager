@@ -1,0 +1,3 @@
+datumaro[default]
+streamlit 
+boto3
