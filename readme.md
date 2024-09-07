@@ -40,6 +40,12 @@ datumaro-gui/
 
 2. Create a virtual environment and activate it:
     ```bash
+    conda create -n datumaro-gui python=3.11 -y
+    conda activate datumaro-gui
+    ```
+    [Note] tested with python =< 3.11
+    OR
+    ```bash
     python3 -m venv env
     source env/bin/activate  # On Windows, use `env\Scripts\activate`
     ```
