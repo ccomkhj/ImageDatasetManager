@@ -42,11 +42,9 @@ def main():
         st.session_state.s3_comment = ""
 
     if st.button("Register Annotation"):
-        if images and annotation and st.session_state.filter_cmd:
+        if images and annotation:
             base_path, now = save_uploaded_files(images, annotation)
-            task_path = create_new_task_split(
-                base_path, now, filter_cmd=st.session_state.filter_cmd
-            )
+            task_path = create_new_task_split(base_path, now)
             st.session_state.task_path = task_path
             st.success(f"New task created at {task_path}.")
             st.session_state.now = now
