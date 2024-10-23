@@ -73,6 +73,28 @@ datumaro-gui/
 
 2. Open your browser and go to `http://localhost:8501` to interact with the Datumaro-GUI.
 
+
+## To read new dataset
+```
+-- annotations
+    |- instances_train.json
+    |- instances_val.json
+    # subsets are train and val
+-- images
+    |- train
+    |- val
+
+```
+or
+```
+-- annotations
+    |- instance_default.json
+    # subsets are only default
+-- images
+    |- train
+```
+
+
 ## Contributing
 
 Contributions are welcome! Feel free to submit a pull request or open an issue.
