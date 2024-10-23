@@ -76,6 +76,8 @@ def filter_func(item: DatasetItem) -> bool:
             st.session_state.task_path = task_path
             st.success(f"New task created at {task_path}.")
             st.session_state.now = now
+        else:
+            st.error("Please upload images, annotations, and define a filter function.")
 
     if st.session_state.task_path:
         st.session_state.s3_uri = st.text_input(
