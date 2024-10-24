@@ -36,6 +36,65 @@ def load_dataset_from_s3(s3_uri: str, local_download_path="existing_task"):
     return local_download_path
 
 
+def load_dataset_from_s3_keep_parents(
+    s3_uri: str, local_download_path="existing_task", file_extensions=None
+):
+    credentials = load_aws_credentials()
+    s3 = boto3.client(
+        "s3",
+        aws_access_key_id=credentials["aws_access_key_id"],
+        aws_secret_access_key=credentials["aws_secret_access_key"],
+    )
+
+    if s3_uri.startswith("s3://"):
+        s3_uri = s3_uri[5:]
+
+    bucket_name, prefix = s3_uri.split("/", 1)
+    identifier = os.path.basename(s3_uri.rstrip("/"))
+    local_download_path = os.path.join(local_download_path, identifier)
+    os.makedirs(local_download_path, exist_ok=True)
+
+    paginator = s3.get_paginator("list_objects_v2")
+    file_extensions = (
+        file_extensions if file_extensions else [".jpg", ".jpeg", ".png", ".json"]
+    )  # Default image extensions
+
+    for page in paginator.paginate(Bucket=bucket_name, Prefix=prefix):
+        for obj in page.get("Contents", []):
+            key = obj["Key"]
+            logger.debug(f"Processing key: {key}")
+
+            # Check if the file has the desired extension
+            if not any(key.lower().endswith(ext) for ext in file_extensions):
+                logger.info(f"Skipping non-target file type for {key}.")
+                continue
+
+            rel_path = os.path.relpath(key, prefix)
+            local_file_path = os.path.join(local_download_path, rel_path)
+            local_dir = os.path.dirname(local_file_path)
+
+            try:
+                os.makedirs(local_dir, exist_ok=True)
+                logger.debug(f"Ensured directory exists: {local_dir}")
+            except Exception as e:
+                logger.error(f"Failed to create directory {local_dir}: {e}")
+                continue
+
+            if os.path.exists(local_file_path):
+                logger.warning(
+                    f"File already exists; skipping download: {local_file_path}"
+                )
+                continue
+
+            try:
+                s3.download_file(bucket_name, key, local_file_path)
+                logger.info(f"Downloaded {key} to {local_file_path}")
+            except Exception as e:
+                logger.error(f"Failed to download {key}: {e}")
+
+    return local_download_path
+
+
 def save_uploaded_files(images, annotation):
     today = datetime.datetime.now()
     now = today.strftime("%Y-%m-%d_%H:%M:%S")
@@ -53,7 +112,7 @@ def save_uploaded_files(images, annotation):
             f.write(image.getbuffer())
 
     # Save annotation file
-    annotation_path = os.path.join(annotations_path, annotation.name)
+    annotation_path = os.path.join(annotations_path, "instances_default.json")
     with open(annotation_path, "wb") as f:
         f.write(annotation.getbuffer())
 

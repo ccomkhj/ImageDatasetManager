@@ -14,7 +14,7 @@ def create_new_task_filter(
     input_base_path: str, now: str, filter_cmd: str, export_base_path="exported"
 ):
     # Load new dataset
-    dataset = Dataset.import_from(input_base_path, "coco")
+    dataset = Dataset.import_from(input_base_path, "coco_instances")
 
     st.text("Dataset profile before filtering:")
     st.code(dataset)
@@ -31,7 +31,7 @@ def create_new_task_filter(
     st.code(filtered_result)
 
     # Export the split datasets
-    filtered_result.export(export_path, "coco", save_media=True)
+    filtered_result.export(export_path, "coco_instances", save_media=True)
 
     return export_path
 
@@ -39,7 +39,7 @@ def create_new_task_filter(
 def main():
     st.write("# Filter Annotation")
     images = st.file_uploader(
-        "Upload Image Files", accept_multiple_files=True, type=["jpg", "png"]
+        "Upload Image Files", accept_multiple_files=True, type=["jpg", "png", "jpeg"]
     )
     annotation = st.file_uploader("Upload Annotation File", type=["json", "xml"])
 
@@ -56,7 +56,7 @@ def main():
     sample_code = """
 def filter_func(item: DatasetItem) -> bool:
     h, w = item.media_as(Image).size
-    return h > 1024 or w > 1024
+    return w > 2048
     """
     st.code(sample_code)
     st.text("Above is a sample code to filter. You can apply your own below.")
