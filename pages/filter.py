@@ -11,7 +11,11 @@ import os
 
 
 def create_new_task_filter(
-    input_base_path: str, now: str, filter_cmd: str, export_base_path="exported"
+    input_base_path: str,
+    now: str,
+    filter_cmd: str,
+    export_base_path="exported",
+    split_option=True,
 ):
     # Load new dataset
     dataset = Dataset.import_from(input_base_path, "coco_instances")
@@ -29,6 +33,12 @@ def create_new_task_filter(
 
     st.text("Dataset profile after filtering:")
     st.code(filtered_result)
+
+    if split_option:
+        # Split the aggregated dataset
+        splits = [("train", 0.8), ("val", 0.2)]
+        task = splitter.SplitTask.detection.name
+        filtered_result = filtered_result.transform("split", task=task, splits=splits)
 
     # Export the split datasets
     filtered_result.export(export_path, "coco_instances", save_media=True)
@@ -52,6 +62,8 @@ def main():
     if "filter_cmd" not in st.session_state:
         st.session_state.filter_cmd = ""
 
+    split_option = st.checkbox("Split after merging?", value=True)  # Add this line
+
     st.divider()
     sample_code = """
 def filter_func(item: DatasetItem) -> bool:
@@ -71,7 +83,10 @@ def filter_func(item: DatasetItem) -> bool:
         if images and annotation and st.session_state.filter_cmd:
             base_path, now = save_uploaded_files(images, annotation)
             task_path = create_new_task_filter(
-                base_path, now, filter_cmd=st.session_state.filter_cmd
+                base_path,
+                now,
+                filter_cmd=st.session_state.filter_cmd,
+                split_option=split_option,
             )
             st.session_state.task_path = task_path
             st.success(f"New task created at {task_path}.")

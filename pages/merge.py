@@ -35,7 +35,7 @@ def merge_and_split_datasets(
             label_cat.name
             for label_cat in existing_dataset.categories()[dm.AnnotationType.label]
         ]
-        if new_label_names != existing_label_names:
+        if set(new_label_names) != set(existing_label_names):
             raise ValueError("Categories of the datasets do not match!")
 
         # Perform merging using union policy

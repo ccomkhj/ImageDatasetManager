@@ -9,7 +9,7 @@ import os
 
 def create_new_task_split(input_base_path: str, now: str, export_base_path="exported"):
     # Load new dataset
-    dataset = Dataset.import_from(input_base_path, "coco")
+    dataset = Dataset.import_from(input_base_path, "coco_instances")
 
     # Aggregate subsets
     aggregated = HLOps.aggregate(dataset, from_subsets=["default"], to_subset="default")
@@ -22,7 +22,7 @@ def create_new_task_split(input_base_path: str, now: str, export_base_path="expo
     export_path = os.path.join(export_base_path, now)
 
     # Export the split datasets
-    resplitted.export(export_path, "coco", save_media=True)
+    resplitted.export(export_path, "coco_instances", save_media=True)
 
     return export_path
 

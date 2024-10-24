@@ -94,6 +94,11 @@ or
     |- train
 ```
 
+## Recommended workflow
+1. use `new` if it's your first dataset
+2. use `merge` if your new dataset needs to be merged
+3. use `filter` if you want to create the dataset selectively (after `merge` or `new`)
+
 
 ## Contributing
 
