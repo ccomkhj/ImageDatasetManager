@@ -37,8 +37,8 @@ def create_new_task_filter(
     if split_option:
         # Split the aggregated dataset
         splits = [("train", 0.8), ("val", 0.2)]
-        task = splitter.SplitTask.detection.name
-        filtered_result = filtered_result.transform("split", task=task, splits=splits)
+        # task = splitter.SplitTask.detection.name  # no need?
+        filtered_result = filtered_result.transform("random_split", splits=splits)
 
     # Export the split datasets
     filtered_result.export(export_path, "coco_instances", save_media=True)

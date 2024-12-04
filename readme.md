@@ -7,6 +7,7 @@ Datumaro-GUI is a graphical user interface (GUI) built with Streamlit to make wo
 - **Register new datasets**: Upload and process images and annotations to create new datasets.
 - **Merge datasets**: Combine existing datasets with new data and split them into training and validation sets.
 - **Filter annotations**: Apply custom filters to datasets to extract specific data based on conditions.
+- **Validate annotations**: Validate dataset and spot the potential issues.
 - **AWS S3 Integration**: Load existing datasets from S3 and upload the processed datasets back to S3.
 
 ## Project Structure
@@ -19,6 +20,7 @@ datumaro-gui/
 │   ├── merge.py
 │   ├── new.py
 │   ├── filter.py
+|   |── validate.py
 ├── requirements.txt
 ├── README.md
 └── credentials/
@@ -31,6 +33,7 @@ datumaro-gui/
     - **merge.py**: Page for merging datasets.
     - **new.py**: Page for registering new annotations.
     - **filter.py**: Page for applying filters to datasets.
+    - **validate.py**: Page for validating datasets.
 - **credentials/aws.yaml**: Stores the AWS credentials for interacting with S3.
 
 ## Installation
@@ -98,6 +101,7 @@ or
 1. use `new` if it's your first dataset
 2. use `merge` if your new dataset needs to be merged
 3. use `filter` if you want to create the dataset selectively (after `merge` or `new`)
+4. use `validate` if you want to validate the dataset selectively (after `merge` or `new`)
 
 
 ## Contributing

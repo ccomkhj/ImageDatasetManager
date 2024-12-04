@@ -1,4 +1,5 @@
 import streamlit as st
+import pandas as pd
 import datumaro as dm
 from datumaro.components.dataset import Dataset
 from datumaro.components.hl_ops import HLOps
@@ -15,6 +16,7 @@ import os
 def merge_and_split_datasets(
     new_task_path, existing_datasets, now, output_base_path="merged", split=True
 ):
+    # Note: it is aggregating instead of merging. So it assumes homogeneous dataset
     # Load the new dataset
     new_dataset = Dataset.import_from(new_task_path, "coco_instances")
 
@@ -50,7 +52,7 @@ def merge_and_split_datasets(
         # Split the aggregated dataset
         splits = [("train", 0.8), ("val", 0.2)]
         task = splitter.SplitTask.detection.name
-        aggregated = aggregated.transform("split", task=task, splits=splits)
+        aggregated = aggregated.transform("random_split", task=task, splits=splits)
 
     os.makedirs(output_base_path, exist_ok=True)
     export_path = os.path.join(output_base_path, now)
