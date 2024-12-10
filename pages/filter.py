@@ -18,7 +18,7 @@ def create_new_task_filter(
     split_option=True,
 ):
     # Load new dataset
-    dataset = Dataset.import_from(input_base_path, "coco_instances")
+    dataset = Dataset.import_from(input_base_path, "coco")
 
     st.text("Dataset profile before filtering:")
     st.code(dataset)
@@ -37,11 +37,10 @@ def create_new_task_filter(
     if split_option:
         # Split the aggregated dataset
         splits = [("train", 0.8), ("val", 0.2)]
-        # task = splitter.SplitTask.detection.name  # no need?
         filtered_result = filtered_result.transform("random_split", splits=splits)
 
     # Export the split datasets
-    filtered_result.export(export_path, "coco_instances", save_media=True)
+    filtered_result.export(export_path, "coco", save_media=True)
 
     return export_path
 
@@ -64,6 +63,11 @@ def main():
 
     split_option = st.checkbox("Split after merging?", value=True)  # Add this line
 
+    # Add the dropdown menu for selecting job type
+    job_type = st.selectbox(
+        "Select Annotation Type", ["instances", "keypoints", "segmentation"]
+    )
+
     st.divider()
     sample_code = """
 def filter_func(item: DatasetItem) -> bool:
@@ -81,7 +85,7 @@ def filter_func(item: DatasetItem) -> bool:
 
     if st.button("Register Annotation"):
         if images and annotation and st.session_state.filter_cmd:
-            base_path, now = save_uploaded_files(images, annotation)
+            base_path, now = save_uploaded_files(images, annotation, job_type)
             task_path = create_new_task_filter(
                 base_path,
                 now,

@@ -18,7 +18,7 @@ def merge_and_split_datasets(
 ):
     # Note: it is aggregating instead of merging. So it assumes homogeneous dataset
     # Load the new dataset
-    new_dataset = Dataset.import_from(new_task_path, "coco_instances")
+    new_dataset = Dataset.import_from(new_task_path, "coco")
 
     # Check if all categories are the same across all datasets
     new_label_names = [
@@ -32,7 +32,7 @@ def merge_and_split_datasets(
     for existing_dataset_path in existing_datasets:
 
         # Load the existing dataset
-        existing_dataset = Dataset.import_from(existing_dataset_path, "coco_instances")
+        existing_dataset = Dataset.import_from(existing_dataset_path, "coco")
         existing_label_names = [
             label_cat.name
             for label_cat in existing_dataset.categories()[dm.AnnotationType.label]
@@ -51,12 +51,11 @@ def merge_and_split_datasets(
     if split:
         # Split the aggregated dataset
         splits = [("train", 0.8), ("val", 0.2)]
-        task = splitter.SplitTask.detection.name
-        aggregated = aggregated.transform("random_split", task=task, splits=splits)
+        aggregated = aggregated.transform("random_split", splits=splits)
 
     os.makedirs(output_base_path, exist_ok=True)
     export_path = os.path.join(output_base_path, now)
-    aggregated.export(export_path, "coco_instances", reindex=True, save_media=True)
+    aggregated.export(export_path, "coco", reindex=True, save_media=True)
 
     return export_path
 
@@ -103,11 +102,16 @@ def main():
     if "s3_comment" not in st.session_state:
         st.session_state.s3_comment = ""
 
+    # Add the dropdown menu for selecting job type
+    job_type = st.selectbox(
+        "Select Annotation Type", ["instances", "keypoints", "segmentation"]
+    )
+
     if st.button("Merge Datasets"):
         if (dataset_source == "S3" and existing_s3_uris) or (
             dataset_source == "Local" and prev_images and prev_annotation
         ):
-            new_task_path, now = save_uploaded_files(images, annotation)
+            new_task_path, now = save_uploaded_files(images, annotation, job_type)
             existing_task_paths = []
 
             if dataset_source == "S3":
@@ -122,7 +126,7 @@ def main():
             elif dataset_source == "Local":
                 # Save existing dataset
                 existing_task_path, _ = save_uploaded_files(
-                    prev_images, prev_annotation
+                    prev_images, prev_annotation, job_type
                 )
                 existing_task_paths.append(existing_task_path)
 

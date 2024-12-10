@@ -95,7 +95,7 @@ def load_dataset_from_s3_keep_parents(
     return local_download_path
 
 
-def save_uploaded_files(images, annotation):
+def save_uploaded_files(images, annotation, job_type):
     today = datetime.datetime.now()
     now = today.strftime("%Y-%m-%d_%H:%M:%S")
     base_path = f"uploaded/{now}"
@@ -111,8 +111,16 @@ def save_uploaded_files(images, annotation):
         with open(os.path.join(images_path, image.name), "wb") as f:
             f.write(image.getbuffer())
 
-    # Save annotation file
-    annotation_path = os.path.join(annotations_path, "instances_default.json")
+    match job_type:
+        case "keypoints":
+            annotation_path = os.path.join(
+                annotations_path, "person_keypoints_default.json"
+            )
+        case "segmentation":
+            annotation_path = os.path.join(annotations_path, "stuff_default.json")
+        case _:
+            annotation_path = os.path.join(annotations_path, "instances_default.json")
+
     with open(annotation_path, "wb") as f:
         f.write(annotation.getbuffer())
 
