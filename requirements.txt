@@ -1,3 +1,4 @@
 datumaro[default]
 streamlit 
 boto3
+loguru
