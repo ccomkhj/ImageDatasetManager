@@ -3,11 +3,13 @@ import datumaro as dm
 from datumaro.components.dataset import Dataset
 from datumaro.components.hl_ops import HLOps
 import datumaro.plugins.splitter as splitter
-from utils import save_uploaded_files, upload_to_s3
+from utils import save_uploaded_files, upload_to_s3, visualize_dataset_with_annotations
 import os
 
 
-def create_new_task_split(input_base_path: str, now: str, dataset_type: str, export_base_path="exported"):
+def create_new_task_split(
+    input_base_path: str, now: str, dataset_type: str, export_base_path="exported"
+):
     # Load new dataset
     dataset = Dataset.import_from(input_base_path, dataset_type)
 
@@ -40,9 +42,7 @@ def main():
 
     # Add the dropdown menu for selecting dataset type
     dataset_types = ["coco_instances", "coco", "voc", "cityscapes", "ade20k"]
-    dataset_type = st.selectbox(
-        "Select Dataset Type", dataset_types, index=0
-    )
+    dataset_type = st.selectbox("Select Dataset Type", dataset_types, index=0)
 
     if "task_path" not in st.session_state:
         st.session_state.task_path = None
@@ -60,6 +60,14 @@ def main():
             st.session_state.now = now
         else:
             st.warning("No file upload. Check both images and annotation.")
+
+    # Visualization option after registration
+    if st.session_state.get("task_path"):
+        if st.button("Visualize Annotations"):
+            visualize_dataset_with_annotations(
+                st.session_state["task_path"], dataset_type
+            )
+        st.caption("You can visually check the registered annotations above.")
 
     if st.session_state.task_path:
         st.session_state.s3_uri = st.text_input(

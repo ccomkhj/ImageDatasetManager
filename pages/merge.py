@@ -9,6 +9,7 @@ from utils import (
     upload_to_s3,
     load_dataset_from_s3,
     load_dataset_from_s3_keep_parents,
+    visualize_dataset_with_annotations,
 )
 import os
 
@@ -82,7 +83,7 @@ def main():
         prev_annotation = st.file_uploader(
             "Upload Existing Annotation File", type=["json", "xml"]
         )
-    split_option = st.checkbox("Split after merging?", value=True)  # Add this line
+    split_option = st.checkbox("Split after merging?", value=True)
 
     st.divider()
 
@@ -95,17 +96,17 @@ def main():
         "Upload Annotation File for New Task", type=["json", "xml"]
     )
 
+    # Add the dropdown menu for selecting job type
+    job_type = st.selectbox(
+        "Select Annotation Type", ["instances", "keypoints", "segmentation"]
+    )
+
     if "merged_task_path" not in st.session_state:
         st.session_state.merged_task_path = None
     if "s3_uri" not in st.session_state:
         st.session_state.s3_uri = ""
     if "s3_comment" not in st.session_state:
         st.session_state.s3_comment = ""
-
-    # Add the dropdown menu for selecting job type
-    job_type = st.selectbox(
-        "Select Annotation Type", ["instances", "keypoints", "segmentation"]
-    )
 
     if st.button("Merge Datasets"):
         if (dataset_source == "S3" and existing_s3_uris) or (
@@ -140,6 +141,14 @@ def main():
                 f"Datasets merged and split. Merged data saved at {merged_task_path}"
             )
             st.session_state.now = now
+
+    # Visualization option after merging
+    if st.session_state.get("merged_task_path"):
+        if st.button("Visualize Merged Annotations"):
+            visualize_dataset_with_annotations(
+                st.session_state["merged_task_path"], "coco"
+            )
+        st.caption("You can visually check the merged annotations above.")
 
     if st.session_state.merged_task_path is not None:
         st.session_state.s3_uri = st.text_input(
