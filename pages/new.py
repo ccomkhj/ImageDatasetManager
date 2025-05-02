@@ -8,10 +8,21 @@ import os
 
 
 def create_new_task_split(
-    input_base_path: str, now: str, dataset_type: str, export_base_path="exported"
+    input_base_path: str, now: str, export_base_path="exported", job_type=None
 ):
+
+    match job_type:
+        case None:
+            type_name = "coco"
+        case "instance":
+            type_name = "coco_instances"
+        case "keypoints":
+            type_name = "coco_person_keypoints"
+        case "segmentation":
+            type_name = "coco_stuff"
+
     # Load new dataset
-    dataset = Dataset.import_from(input_base_path, dataset_type)
+    dataset = Dataset.import_from(input_base_path, type_name)
 
     # Aggregate subsets
     aggregated = HLOps.aggregate(dataset, from_subsets=["default"], to_subset="default")
@@ -23,7 +34,7 @@ def create_new_task_split(
     export_path = os.path.join(export_base_path, now)
 
     # Export the split datasets
-    resplitted.export(export_path, dataset_type, reindex=True, save_media=True)
+    resplitted.export(export_path, type_name, save_media=True) # reindex = True??
 
     return export_path
 
@@ -54,7 +65,7 @@ def main():
     if st.button("Register Annotation"):
         if images and annotation:
             base_path, now = save_uploaded_files(images, annotation, job_type)
-            task_path = create_new_task_split(base_path, now, dataset_type)
+            task_path = create_new_task_split(base_path, now, job_type=job_type)
             st.session_state.task_path = task_path
             st.success(f"New task created at {task_path}.")
             st.session_state.now = now
