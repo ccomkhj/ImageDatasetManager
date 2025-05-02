@@ -18,7 +18,7 @@ def create_new_task_filter(
     split_option=True,
 ):
     # Load new dataset
-    dataset = Dataset.import_from(input_base_path, "coco")
+    dataset = Dataset.import_from(input_base_path, "coco_instances")
 
     st.text("Dataset profile before filtering:")
     st.code(dataset)
@@ -40,7 +40,7 @@ def create_new_task_filter(
         filtered_result = filtered_result.transform("random_split", splits=splits)
 
     # Export the split datasets
-    filtered_result.export(export_path, "coco", save_media=True)
+    filtered_result.export(export_path, "coco_instances", save_media=True)
 
     return export_path
 

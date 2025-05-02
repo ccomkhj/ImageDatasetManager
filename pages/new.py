@@ -7,9 +7,9 @@ from utils import save_uploaded_files, upload_to_s3
 import os
 
 
-def create_new_task_split(input_base_path: str, now: str, export_base_path="exported"):
+def create_new_task_split(input_base_path: str, now: str, dataset_type: str, export_base_path="exported"):
     # Load new dataset
-    dataset = Dataset.import_from(input_base_path, "coco")
+    dataset = Dataset.import_from(input_base_path, dataset_type)
 
     # Aggregate subsets
     aggregated = HLOps.aggregate(dataset, from_subsets=["default"], to_subset="default")
@@ -21,7 +21,7 @@ def create_new_task_split(input_base_path: str, now: str, export_base_path="expo
     export_path = os.path.join(export_base_path, now)
 
     # Export the split datasets
-    resplitted.export(export_path, "coco", save_media=True)
+    resplitted.export(export_path, dataset_type, reindex=True, save_media=True)
 
     return export_path
 
@@ -38,6 +38,12 @@ def main():
         "Select Annotation Type", ["instances", "keypoints", "segmentation"]
     )
 
+    # Add the dropdown menu for selecting dataset type
+    dataset_types = ["coco_instances", "coco", "voc", "cityscapes", "ade20k"]
+    dataset_type = st.selectbox(
+        "Select Dataset Type", dataset_types, index=0
+    )
+
     if "task_path" not in st.session_state:
         st.session_state.task_path = None
     if "s3_uri" not in st.session_state:
@@ -48,7 +54,7 @@ def main():
     if st.button("Register Annotation"):
         if images and annotation:
             base_path, now = save_uploaded_files(images, annotation, job_type)
-            task_path = create_new_task_split(base_path, now)
+            task_path = create_new_task_split(base_path, now, dataset_type)
             st.session_state.task_path = task_path
             st.success(f"New task created at {task_path}.")
             st.session_state.now = now
