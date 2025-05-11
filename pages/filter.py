@@ -6,8 +6,9 @@ from datumaro.components.dataset_base import DatasetItem
 from datumaro.components.media import Image
 from datumaro.components.hl_ops import HLOps
 import datumaro.plugins.splitter as splitter
-from utils import save_uploaded_files, upload_to_s3
+from utils import save_uploaded_files, upload_to_s3, show_category_statistics
 import os
+import json
 
 
 def create_new_task_filter(
@@ -23,8 +24,6 @@ def create_new_task_filter(
     st.text("Dataset profile before filtering:")
     st.code(dataset)
 
-    export_path = os.path.join(export_base_path, now)
-
     # Define the filter function in the current scope
     exec(filter_cmd, globals())
 
@@ -33,16 +32,29 @@ def create_new_task_filter(
 
     st.text("Dataset profile after filtering:")
     st.code(filtered_result)
-
+    
+    # Create a temporary export for statistics before splitting
+    temp_export_path = os.path.join(export_base_path, f"{now}_temp")
+    os.makedirs(temp_export_path, exist_ok=True)
+    
+    # Export the filtered dataset for statistics
+    filtered_result.export(temp_export_path, "coco_instances", save_media=False)
+    
+    # Get the annotation file path for statistics
+    stats_annotations_path = os.path.join(temp_export_path, "annotations", "instances_default.json")
+    
+    # Now prepare the actual export with splitting if needed
+    export_path = os.path.join(export_base_path, now)
+    
     if split_option:
-        # Split the aggregated dataset
+        # Split the filtered dataset
         splits = [("train", 0.8), ("val", 0.2)]
         filtered_result = filtered_result.transform("random_split", splits=splits)
 
     # Export the split datasets
     filtered_result.export(export_path, "coco_instances", save_media=True)
-
-    return export_path
+    
+    return export_path, stats_annotations_path
 
 
 def main():
@@ -86,7 +98,7 @@ def filter_func(item: DatasetItem) -> bool:
     if st.button("Register Annotation"):
         if images and annotation and st.session_state.filter_cmd:
             base_path, now = save_uploaded_files(images, annotation, job_type)
-            task_path = create_new_task_filter(
+            task_path, annotations_path = create_new_task_filter(
                 base_path,
                 now,
                 filter_cmd=st.session_state.filter_cmd,
@@ -95,6 +107,16 @@ def filter_func(item: DatasetItem) -> bool:
             st.session_state.task_path = task_path
             st.success(f"New task created at {task_path}.")
             st.session_state.now = now
+            
+            # Show category statistics after filtering
+            st.divider()
+            st.write("## Category Statistics After Filtering")
+            try:
+                with open(annotations_path, 'r') as f:
+                    coco_data = json.load(f)
+                show_category_statistics(coco_data)
+            except Exception as e:
+                st.error(f"Error loading COCO file for statistics: {e}")
         else:
             st.error("Please upload images, annotations, and define a filter function.")
 
@@ -124,8 +146,31 @@ def filter_func(item: DatasetItem) -> bool:
                     st.session_state.s3_comment,
                 )
                 st.success(f"Data uploaded to S3 at {st.session_state.s3_uri}")
+                
+                # Show category statistics after upload
+                st.divider()
+                st.write("## Category Statistics of Uploaded Data")
+                try:
+                    annotations_path = os.path.join(st.session_state.task_path, "annotations", "instances_default.json")
+                    with open(annotations_path, 'r') as f:
+                        coco_data = json.load(f)
+                    show_category_statistics(coco_data)
+                except Exception as e:
+                    st.error(f"Error loading COCO file for statistics: {e}")
     elif st.button("Upload to S3"):
         st.warning("First create a task before uploading to S3.")
+        
+    # Add a button to show category statistics independently
+    if st.session_state.task_path and st.button("Show Category Statistics"):
+        st.divider()
+        st.write("## Category Statistics")
+        try:
+            annotations_path = os.path.join(st.session_state.task_path, "annotations", "instances_default.json")
+            with open(annotations_path, 'r') as f:
+                coco_data = json.load(f)
+            show_category_statistics(coco_data)
+        except Exception as e:
+            st.error(f"Error loading COCO file for statistics: {e}")
 
 
 main()
