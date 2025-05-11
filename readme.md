@@ -1,44 +1,35 @@
 # Datumaro-GUI
 
-Datumaro-GUI is a powerful graphical user interface (GUI) built with Streamlit that streamlines working with computer vision datasets using the Datumaro framework. Designed for computer vision researchers and engineers, this tool simplifies dataset management tasks with an intuitive interface for registering, merging, filtering, and validating annotations.
+A streamlined GUI for computer vision dataset management using the Datumaro framework. Simplifies dataset registration, merging, filtering, and validation with an intuitive interface designed for researchers and engineers.
 
 ## Features
 
-- **Register new datasets**: Upload and process images and annotations to create new datasets with automatic train/validation splitting.
-- **Merge datasets**: Combine existing datasets with new data and intelligently split them into training and validation sets.
-- **Filter annotations**: Apply custom Python filters to datasets to extract specific data based on sophisticated conditions.
-- **Validate annotations**: Identify and visualize potential issues in your datasets with comprehensive validation reports.
-- **Category management**: Edit, merge, and manage annotation categories with an intuitive interface.
-- **AWS S3 Integration**: Seamlessly load existing datasets from S3 and upload the processed datasets back to S3.
-- **Visualization tools**: Visualize annotations and view detailed category statistics for better dataset understanding.
+- **Register** new datasets with automatic train/validation splitting
+- **Merge** multiple datasets while maintaining category consistency
+- **Filter** annotations using custom Python functions
+- **Validate** datasets with comprehensive error detection
+- **Manage** annotation categories with an intuitive editor
+- **Visualize** annotations with advanced statistics and insights
+- **S3 Integration** for cloud-based dataset management
 
 ## Project Structure
 
 ```
 datumaro-gui/
-├── app.py
-├── utils.py
+├── app.py                 # Main application entry point
+├── utils.py               # Utility functions
+├── enhanced_viz.py        # Enhanced visualization module
 ├── pages/
-│   ├── merge.py
-│   ├── new.py
-│   ├── filter.py
-│   ├── validate.py
-│   └── category.py
+│   ├── new.py             # Register new datasets
+│   ├── merge.py           # Merge existing datasets
+│   ├── filter.py          # Filter annotations
+│   ├── validate.py        # Validate datasets
+│   ├── category.py        # Manage categories
+│   └── stats_visualizer.py # Advanced statistics visualization
 ├── requirements.txt
-├── README.md
 └── credentials/
-    └── aws.yaml
+    └── aws.yaml           # AWS credentials for S3 access
 ```
-
-- **app.py**: The main entry point for the Streamlit application.
-- **utils.py**: Utility functions for handling file uploads, AWS S3 interactions, visualization, and other helper functions.
-- **pages/**: Contains the different pages for the Streamlit app.
-    - **new.py**: Page for registering new annotations with automatic train/val splitting.
-    - **merge.py**: Page for merging multiple datasets with customizable options.
-    - **filter.py**: Page for applying custom Python filters to datasets.
-    - **validate.py**: Page for validating datasets and identifying potential issues.
-    - **category.py**: Page for managing and editing annotation categories.
-- **credentials/aws.yaml**: Stores the AWS credentials for interacting with S3.
 
 ## Installation
 
@@ -95,101 +86,74 @@ datumaro-gui/
 or
 ```
 -- annotations
-    |- instance_default.json
+    |- instances_default.json
     # subsets are only default
 -- images
-    |- train
+    |- default
 ```
 
 ## Recommended Workflow
 
-1. Use **Register Annotation** (`new`) if it's your first dataset
-2. Use **Merge Annotations** (`merge`) if you need to combine datasets
-3. Use **Filter Annotation** (`filter`) to create datasets selectively (after `merge` or `new`)
-4. Use **Validate Dataset** (`validate`) to check for potential issues in your dataset
-5. Use **Category Editor** (`category`) to manage and edit annotation categories
+1. **Register** new datasets (`new`)
+2. **Merge** datasets if needed (`merge`)
+3. **Filter** annotations selectively (`filter`)
+4. **Validate** for quality assurance (`validate`)
+5. **Manage** categories as needed (`category`)
+6. **Visualize** with advanced statistics (`stats_visualizer`)
 
-## Interface Overview
+## Key Interfaces
 
 ### Register Annotation
 
-The Register Annotation interface allows you to upload image files and annotation files to create a new dataset. The interface includes:
-
-- File upload areas for images and annotation files
-- Dropdown menus for selecting annotation type (instances, keypoints, segmentation)
-- Dataset type selection (COCO, VOC, etc.)
-- Automatic train/validation splitting (80/20 by default)
-- Visualization tools to preview annotations
-- Category statistics display with distribution charts
-- S3 upload functionality with custom URI and comments
+Upload and process images and annotations with automatic train/val splitting, visualization, and S3 integration.
 
 ### Merge Annotations
 
-The Merge Annotations interface combines multiple datasets with these features:
-
-- Source selection between S3 and local datasets
-- Multiple dataset merging with category consistency checking
-- Customizable train/validation splitting options
-- Visualization of merged annotations
-- Category statistics before and after merging
-- S3 upload functionality for the merged dataset
+Combine datasets from S3 or local sources with category consistency checking and customizable splitting options.
 
 ### Filter Annotation
 
-The Filter Annotation interface provides powerful dataset filtering with:
-
-- Custom Python filter function editor with syntax highlighting
-- Sample filter code templates for common filtering operations
-- Dataset statistics before and after filtering
-- Visualization of filtered annotations
-- S3 upload functionality for filtered datasets
+Apply custom Python filters with a code editor, templates, and visualization of filtered results.
 
 ### Validate Dataset
 
-The Validate Dataset interface helps identify issues in your datasets with:
-
-- Support for local and S3 dataset sources
-- Comprehensive validation reports with severity indicators
-- Dataset statistics and metrics
-- Visual summary of validation results
-- Detailed anomaly descriptions and item IDs
+Identify issues with comprehensive validation reports, statistics, and visual summaries.
 
 ### Category Editor
 
-The Category Editor interface provides tools for managing annotation categories:
+Manage annotation categories with an interactive table editor and visualization tools.
 
-- Interactive table for editing category properties
-- Category statistics visualization
-- Tools to remove categories and their associated annotations
-- Export functionality for modified annotation files
+### Statistics Visualizer
+
+Advanced visualization interface with:
+
+- Interactive category-based annotation samples
+- Comprehensive distribution charts and statistics
+- Annotation type and size analysis
+- Support for local uploads, paths, and S3 sources
+- Detailed visualization of bounding boxes, segmentation, and keypoints
 
 
-## Use Cases for Computer Vision Experts
+## Use Cases
 
-### Dataset Preparation for Model Training
+### Dataset Preparation
 
-Datumaro-GUI streamlines the process of preparing datasets for training computer vision models:
+- Merge data sources with consistent categories
+- Create balanced train/val splits
+- Apply custom filters for specialized datasets
+- Standardize categories across projects
 
-- **Data Consolidation**: Easily merge multiple data sources while maintaining category consistency
-- **Train/Val Splitting**: Automatically create properly balanced training and validation sets
-- **Custom Filtering**: Apply sophisticated filters to create specialized datasets for specific model training needs
-- **Category Management**: Standardize categories across datasets for consistent model training
+### Quality Assurance
 
-### Dataset Quality Assurance
+- Identify annotation issues with validation reports
+- Analyze class distributions and imbalances
+- Visualize annotations to catch errors
 
-Ensure your datasets meet quality standards before training:
+### Efficient Workflow
 
-- **Validation Reports**: Identify and fix annotation issues before they affect model training
-- **Category Statistics**: Analyze class distributions to identify imbalances
-- **Visualization**: Visually inspect annotations to catch labeling errors
-
-### Efficient Dataset Management
-
-Streamline your dataset workflow:
-
-- **S3 Integration**: Seamlessly work with cloud-stored datasets
-- **Batch Processing**: Process entire datasets with a few clicks
-- **Standardization**: Ensure consistent dataset formats across projects
+- Seamless S3 integration for cloud datasets
+- Batch processing with a few clicks
+- Advanced statistics for dataset insights
 
 ## Contributing
 

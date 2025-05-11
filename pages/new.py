@@ -98,7 +98,9 @@ def main():
                 if os.path.exists(annotations_path):
                     with open(annotations_path, 'r', encoding='utf-8') as f:
                         coco_data = json.load(f)
-                    show_category_statistics(coco_data)
+                    # Get the images directory path
+                    images_dir = os.path.join(task_path, "images")
+                    show_category_statistics(coco_data, image_dir=images_dir)
                 else:
                     st.warning(f"Annotation file not found at {annotations_path}")
             except Exception as e:
