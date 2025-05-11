@@ -415,9 +415,21 @@ def visualize_dataset_with_annotations(dataset_path, dataset_type="coco", max_it
                             hasattr(keypoint_ann, 'group') and 
                             keypoint_ann.group == group_id):
                             # Draw keypoints with the same color as the bounding box
+                            point_size = 8  # Larger point size
+                            outline_size = 2  # White outline size
                             for px, py in zip(keypoint_ann.points[::2], keypoint_ann.points[1::2]):
+                                # Draw white outline first
                                 draw.ellipse(
-                                    [px - 3, py - 3, px + 3, py + 3], fill=color, outline=color
+                                    [px - point_size - outline_size, py - point_size - outline_size,
+                                     px + point_size + outline_size, py + point_size + outline_size],
+                                    fill=(255, 255, 255),
+                                    outline=(255, 255, 255)
+                                )
+                                # Then draw the colored point
+                                draw.ellipse(
+                                    [px - point_size, py - point_size, px + point_size, py + point_size],
+                                    fill=color,
+                                    outline=color
                                 )
             elif ann.type == dm.AnnotationType.label:
                 if label_name:
@@ -436,11 +448,22 @@ def visualize_dataset_with_annotations(dataset_path, dataset_type="coco", max_it
                             break
                 
                 # Only draw keypoints here if they don't have a matching bbox
-                # (otherwise they're drawn with the bbox above)
                 if not has_matching_bbox:
+                    point_size = 8  # Larger point size
+                    outline_size = 2  # White outline size
                     for px, py in zip(ann.points[::2], ann.points[1::2]):
+                        # Draw white outline first
                         draw.ellipse(
-                            [px - 3, py - 3, px + 3, py + 3], fill=color, outline=color
+                            [px - point_size - outline_size, py - point_size - outline_size,
+                             px + point_size + outline_size, py + point_size + outline_size],
+                            fill=(255, 255, 255),
+                            outline=(255, 255, 255)
+                        )
+                        # Then draw the colored point
+                        draw.ellipse(
+                            [px - point_size, py - point_size, px + point_size, py + point_size],
+                            fill=color,
+                            outline=color
                         )
             # Add more annotation types as needed
         st.image(img, caption=f"{item.id}")
