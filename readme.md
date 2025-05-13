@@ -10,6 +10,7 @@ A streamlined GUI for computer vision dataset management using the Datumaro fram
 - **Validate** datasets with comprehensive error detection
 - **Manage** annotation categories with an intuitive editor
 - **Visualize** annotations with advanced statistics and insights
+- **Compare** annotations between different versions of a dataset
 - **S3 Integration** for cloud-based dataset management
 
 ## Project Structure
@@ -25,7 +26,8 @@ datumaro-gui/
 │   ├── filter.py          # Filter annotations
 │   ├── validate.py        # Validate datasets
 │   ├── category.py        # Manage categories
-│   └── stats_visualizer.py # Advanced statistics visualization
+│   ├── stats_visualizer.py # Advanced statistics visualization
+│   └── compare.py         # Compare annotation versions
 ├── requirements.txt
 └── credentials/
     └── aws.yaml           # AWS credentials for S3 access
@@ -100,6 +102,7 @@ or
 4. **Validate** for quality assurance (`validate`)
 5. **Manage** categories as needed (`category`)
 6. **Visualize** with advanced statistics (`stats_visualizer`)
+7. **Compare** annotation versions (`compare`)
 
 ## Key Interfaces
 
@@ -133,6 +136,17 @@ Advanced visualization interface with:
 - Support for local uploads, paths, and S3 sources
 - Detailed visualization of bounding boxes, segmentation, and keypoints
 
+### Compare Annotations
+
+Compare two COCO annotation files to identify discrepancies:
+
+- Upload two COCO annotation files and their corresponding images
+- Identify bounding boxes with high IoU but different categories
+- Visualize mismatches with color-coded bounding boxes (COCO1: red solid lines, COCO2: blue dashed lines)
+- Adjust IoU threshold for comparison sensitivity
+- View detailed mismatch information in a structured dataframe
+- Ideal for quality control and annotation verification
+
 
 ## Use Cases
 
@@ -148,6 +162,7 @@ Advanced visualization interface with:
 - Identify annotation issues with validation reports
 - Analyze class distributions and imbalances
 - Visualize annotations to catch errors
+- Compare different annotation versions to find discrepancies
 
 ### Efficient Workflow
 
