@@ -1,4 +1,4 @@
-# Datumaro-GUI
+# Image Dataset Manager
 
 A streamlined GUI for computer vision dataset management using the Datumaro framework. Simplifies dataset registration, merging, filtering, and validation with an intuitive interface designed for researchers and engineers.
 
