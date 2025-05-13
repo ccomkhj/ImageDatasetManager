@@ -16,7 +16,7 @@ A streamlined GUI for computer vision dataset management using the Datumaro fram
 ## Project Structure
 
 ```
-datumaro-gui/
+ImageDatasetManager/
 ├── app.py                 # Main application entry point
 ├── utils.py               # Utility functions
 ├── enhanced_viz.py        # Enhanced visualization module
@@ -37,14 +37,14 @@ datumaro-gui/
 
 1. Clone the repository:
     ```bash
-    git clone https://github.com/ccomkhj/datumaro-gui.git
-    cd datumaro-gui/
+    git clone https://github.com/ccomkhj/ImageDatasetManager
+    cd ImageDatasetManager/
     ```
 
 2. Create a virtual environment and activate it:
     ```bash
-    conda create -n datumaro-gui python=3.11 -y
-    conda activate datumaro-gui
+    conda create -n ImageDatasetManager python=3.11 -y
+    conda activate ImageDatasetManager
     ```
     [Note] tested with python =< 3.11
     OR
@@ -94,16 +94,6 @@ or
     |- default
 ```
 
-## Recommended Workflow
-
-1. **Register** new datasets (`new`)
-2. **Merge** datasets if needed (`merge`)
-3. **Filter** annotations selectively (`filter`)
-4. **Validate** for quality assurance (`validate`)
-5. **Manage** categories as needed (`category`)
-6. **Visualize** with advanced statistics (`stats_visualizer`)
-7. **Compare** annotation versions (`compare`)
-
 ## Key Interfaces
 
 ### Register Annotation
@@ -147,32 +137,6 @@ Compare two COCO annotation files to identify discrepancies:
 - View detailed mismatch information in a structured dataframe
 - Ideal for quality control and annotation verification
 
-
-## Use Cases
-
-### Dataset Preparation
-
-- Merge data sources with consistent categories
-- Create balanced train/val splits
-- Apply custom filters for specialized datasets
-- Standardize categories across projects
-
-### Quality Assurance
-
-- Identify annotation issues with validation reports
-- Analyze class distributions and imbalances
-- Visualize annotations to catch errors
-- Compare different annotation versions to find discrepancies
-
-### Efficient Workflow
-
-- Seamless S3 integration for cloud datasets
-- Batch processing with a few clicks
-- Advanced statistics for dataset insights
-
-## Contributing
-
-Contributions are welcome! Feel free to submit a pull request or open an issue on our GitHub repository.
 
 ## License
 
